@@ -10,6 +10,8 @@ mod tests;
 use alloc::vec::Vec;
 use core::borrow::Borrow;
 
+pub use iter::{Keys, Values, ValuesMut};
+
 #[derive(Debug, Clone, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct VecBTreeMap<K, V> {
     base: Vec<(K, V)>,
@@ -26,6 +28,21 @@ impl<K, V> VecBTreeMap<K, V> {
         Self {
             base: Vec::with_capacity(capacity),
         }
+    }
+
+    #[inline]
+    pub fn keys(&self) -> Keys<'_, K, V> {
+        Keys::new(self.base.iter())
+    }
+
+    #[inline]
+    pub fn values(&self) -> Values<'_, K, V> {
+        Values::new(self.base.iter())
+    }
+
+    #[inline]
+    pub fn values_mut(&mut self) -> ValuesMut<'_, K, V> {
+        ValuesMut::new(self.base.iter_mut())
     }
 }
 
