@@ -1,9 +1,16 @@
+use core::fmt::{Debug, Formatter, Result};
 use core::iter::FusedIterator;
 use core::slice::{Iter, IterMut};
 
 #[must_use = "iterators are lazy and do nothing unless consumed"]
 pub struct Keys<'a, K, V> {
     base: Iter<'a, (K, V)>,
+}
+
+impl<'a, K: Debug, V: Debug> Debug for Keys<'a, K, V> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        self.base.fmt(f)
+    }
 }
 
 impl<'a, K, V> Keys<'a, K, V> {
@@ -39,6 +46,12 @@ impl<K, V> FusedIterator for Keys<'_, K, V> {}
 #[must_use = "iterators are lazy and do nothing unless consumed"]
 pub struct Values<'a, K, V> {
     base: Iter<'a, (K, V)>,
+}
+
+impl<'a, K: Debug, V: Debug> Debug for Values<'a, K, V> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        self.base.fmt(f)
+    }
 }
 
 impl<'a, K, V> Values<'a, K, V> {
@@ -80,6 +93,12 @@ impl<'a, K, V> ValuesMut<'a, K, V> {
     #[inline]
     pub(crate) const fn new(base: IterMut<'a, (K, V)>) -> Self {
         Self { base }
+    }
+}
+
+impl<'a, K: Debug, V: Debug> Debug for ValuesMut<'a, K, V> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        self.base.fmt(f)
     }
 }
 
