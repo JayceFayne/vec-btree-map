@@ -3,6 +3,7 @@ use core::iter::FusedIterator;
 use core::slice::{Iter, IterMut};
 
 #[must_use = "iterators are lazy and do nothing unless consumed"]
+#[derive(Default, Clone)]
 pub struct Keys<'a, K, V> {
     base: Iter<'a, (K, V)>,
 }
@@ -44,6 +45,7 @@ impl<K, V> ExactSizeIterator for Keys<'_, K, V> {
 impl<K, V> FusedIterator for Keys<'_, K, V> {}
 
 #[must_use = "iterators are lazy and do nothing unless consumed"]
+#[derive(Default, Clone)]
 pub struct Values<'a, K, V> {
     base: Iter<'a, (K, V)>,
 }
@@ -85,6 +87,7 @@ impl<K, V> ExactSizeIterator for Values<'_, K, V> {
 impl<K, V> FusedIterator for Values<'_, K, V> {}
 
 #[must_use = "iterators are lazy and do nothing unless consumed"]
+#[derive(Default)]
 pub struct ValuesMut<'a, K, V> {
     base: IterMut<'a, (K, V)>,
 }
