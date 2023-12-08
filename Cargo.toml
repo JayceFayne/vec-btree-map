@@ -1,0 +1,9 @@
+[package]
+name = "vec-btree-map"
+version = "0.1.0"
+edition = "2021"
+description = "Basically just a sorted Vec that can be used as a HashMap"
+license = "MIT"
+repository = "https://github.com/jaycefayne/vec-btree-map"
+keywords = ["vec", "map", "hashmap", "btreemap"]
+readme = "README.md"
