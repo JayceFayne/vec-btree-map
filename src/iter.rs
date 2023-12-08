@@ -1,5 +1,5 @@
 use core::fmt::{Debug, Formatter, Result};
-use core::iter::FusedIterator;
+use core::iter::{DoubleEndedIterator, ExactSizeIterator, FusedIterator, Iterator};
 use core::slice::{Iter, IterMut};
 
 #[must_use = "iterators are lazy and do nothing unless consumed"]
@@ -32,6 +32,12 @@ impl<'a, K, V> Iterator for Keys<'a, K, V> {
     #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
         self.base.size_hint()
+    }
+}
+
+impl<K, V> DoubleEndedIterator for Keys<'_, K, V> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.base.next_back().map(|e| &e.0)
     }
 }
 
@@ -77,6 +83,12 @@ impl<'a, K, V> Iterator for Values<'a, K, V> {
     }
 }
 
+impl<K, V> DoubleEndedIterator for Values<'_, K, V> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.base.next_back().map(|e| &e.1)
+    }
+}
+
 impl<K, V> ExactSizeIterator for Values<'_, K, V> {
     #[inline]
     fn len(&self) -> usize {
@@ -116,6 +128,12 @@ impl<'a, K, V> Iterator for ValuesMut<'a, K, V> {
     #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
         self.base.size_hint()
+    }
+}
+
+impl<K, V> DoubleEndedIterator for ValuesMut<'_, K, V> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.base.next_back().map(|e| &mut e.1)
     }
 }
 
