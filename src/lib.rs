@@ -7,7 +7,7 @@ mod iter;
 #[cfg(test)]
 mod tests;
 
-use alloc::vec::{IntoIter, Vec};
+use alloc::vec::Vec;
 use core::borrow::Borrow;
 
 pub use iter::{Keys, Values, ValuesMut};
@@ -77,15 +77,5 @@ where
         Q: Ord,
     {
         self.binary_search(k).map(|i| self.base.remove(i).1).ok()
-    }
-}
-
-impl<K, V> IntoIterator for VecBTreeMap<K, V> {
-    type Item = (K, V);
-    type IntoIter = IntoIter<Self::Item>;
-
-    #[inline]
-    fn into_iter(self) -> Self::IntoIter {
-        self.base.into_iter()
     }
 }
