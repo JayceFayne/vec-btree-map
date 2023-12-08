@@ -9,6 +9,7 @@ pub struct Keys<'a, K, V> {
 }
 
 impl<'a, K: Debug, V: Debug> Debug for Keys<'a, K, V> {
+    #[inline]
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         self.base.fmt(f)
     }
@@ -36,6 +37,7 @@ impl<'a, K, V> Iterator for Keys<'a, K, V> {
 }
 
 impl<K, V> DoubleEndedIterator for Keys<'_, K, V> {
+    #[inline]
     fn next_back(&mut self) -> Option<Self::Item> {
         self.base.next_back().map(|e| &e.0)
     }
@@ -57,6 +59,7 @@ pub struct Values<'a, K, V> {
 }
 
 impl<'a, K: Debug, V: Debug> Debug for Values<'a, K, V> {
+    #[inline]
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         self.base.fmt(f)
     }
@@ -84,6 +87,7 @@ impl<'a, K, V> Iterator for Values<'a, K, V> {
 }
 
 impl<K, V> DoubleEndedIterator for Values<'_, K, V> {
+    #[inline]
     fn next_back(&mut self) -> Option<Self::Item> {
         self.base.next_back().map(|e| &e.1)
     }
@@ -132,6 +136,7 @@ impl<'a, K, V> Iterator for ValuesMut<'a, K, V> {
 }
 
 impl<K, V> DoubleEndedIterator for ValuesMut<'_, K, V> {
+    #[inline]
     fn next_back(&mut self) -> Option<Self::Item> {
         self.base.next_back().map(|e| &mut e.1)
     }
