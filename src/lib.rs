@@ -18,28 +18,151 @@ pub struct VecBTreeMap<K, V> {
 }
 
 impl<K, V> VecBTreeMap<K, V> {
+    /// Constructs a new, empty `VecBTreeMap<K, V>`.
+    ///
+    /// The map is initially created with a capacity of 0, so it will not allocate until it is first inserted into.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// # #![allow(unused_mut)]
+    /// use vec_btree_map::VecBTreeMap;
+    ///
+    /// let mut map: VecBTreeMap<String, f64> = VecBTreeMap::new();
+    /// ```
     #[inline]
+    #[must_use]
     pub const fn new() -> Self {
         Self { base: Vec::new() }
     }
 
+    /// Constructs a new, empty `VecBTreeMap<K, V>` with at least the specified capacity.
+    ///
+    /// The map will be able to hold at least `capacity` elements without
+    /// reallocating. This method is allowed to allocate for more elements than
+    /// `capacity`. If `capacity` is 0, the map will not allocate.
+    ///
+    /// It is important to note that although the returned map has the
+    /// minimum *capacity* specified, the map will have a zero *length*. For
+    /// an explanation of the difference between length and capacity, see
+    /// *[Capacity and reallocation]*.
+    ///
+    /// If it is important to know the exact allocated capacity of a `VecBTreeMap<K, V>`,
+    /// always use the [`capacity`] method after construction.
+    ///
+    /// [Capacity and reallocation]: Vec#capacity-and-reallocation
+    /// [`capacity`]: Vec::capacity
+    ///
+    /// # Panics
+    ///
+    /// Panics if the new capacity exceeds `isize::MAX` bytes.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use vec_btree_map::VecBTreeMap;
+    ///
+    /// let mut map = VecBTreeMap::with_capacity(10);
+    ///
+    /// // The map contains no items, even though it has capacity for more
+    /// assert_eq!(map.len(), 0);
+    /// assert!(map.capacity() >= 10);
+    ///
+    /// // These are all done without reallocating...
+    /// for i in 0..10 {
+    ///     map.insert(i, i);
+    /// }
+    /// assert_eq!(map.len(), 10);
+    /// assert!(map.capacity() >= 10);
+    ///
+    /// // ...but this may make the map reallocate
+    /// map.insert(11, 0);
+    /// assert_eq!(map.len(), 11);
+    /// assert!(map.capacity() >= 11);
+    /// ```
+    ///     
     #[inline]
+    #[must_use]
     pub fn with_capacity(capacity: usize) -> Self {
         Self {
             base: Vec::with_capacity(capacity),
         }
     }
 
+    /// An iterator yielding all keys from start to end.
+    /// The iterator element type is `&'a K`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use vec_btree_map::VecBTreeMap;
+    ///
+    /// let mut map = VecBTreeMap::with_capacity(3);
+    /// map.insert("a", 1);
+    /// map.insert("b", 2);
+    /// map.insert("c", 3);
+    ///
+    ///let mut keys = map.keys();
+    ///
+    /// assert_eq!(keys.next(), Some(&"a"));
+    /// assert_eq!(keys.next(), Some(&"b"));
+    /// assert_eq!(keys.next(), Some(&"c"));
+    /// assert_eq!(keys.next(), None);
+    /// ```
     #[inline]
     pub fn keys(&self) -> Keys<'_, K, V> {
         Keys::new(self.base.iter())
     }
 
+    /// An iterator yielding all values from start to end.
+    /// The iterator element type is `&'a V`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use vec_btree_map::VecBTreeMap;
+    ///
+    /// let mut map = VecBTreeMap::with_capacity(3);
+    /// map.insert("a", 1);
+    /// map.insert("b", 2);
+    /// map.insert("c", 3);
+    ///
+    ///let mut keys = map.values();
+    ///
+    /// assert_eq!(keys.next(), Some(&1));
+    /// assert_eq!(keys.next(), Some(&2));
+    /// assert_eq!(keys.next(), Some(&3));
+    /// assert_eq!(keys.next(), None);
+    /// ```
     #[inline]
     pub fn values(&self) -> Values<'_, K, V> {
         Values::new(self.base.iter())
     }
 
+    /// An iterator yielding all values mutably from start to end.
+    /// The iterator element type is `&'a V`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use vec_btree_map::VecBTreeMap;
+    ///
+    /// let mut map = VecBTreeMap::with_capacity(3);
+    /// map.insert("a", 1);
+    /// map.insert("b", 2);
+    /// map.insert("c", 3);
+    ///
+    /// for val in map.values_mut() {
+    ///     *val *= *val;
+    /// }
+    ///
+    ///let mut keys = map.values();
+    ///
+    /// assert_eq!(keys.next(), Some(&1));
+    /// assert_eq!(keys.next(), Some(&4));
+    /// assert_eq!(keys.next(), Some(&9));
+    /// assert_eq!(keys.next(), None);
+    /// ```
     #[inline]
     pub fn values_mut(&mut self) -> ValuesMut<'_, K, V> {
         ValuesMut::new(self.base.iter_mut())
@@ -50,6 +173,31 @@ impl<K, V> VecBTreeMap<K, V>
 where
     K: Ord,
 {
+    /// Binary searches this map for a given key.
+    ///
+    /// If the key is found then [`Result::Ok`] is returned, containing the
+    /// index of the matching key.
+    /// If the key is not found then [`Result::Err`] is returned, containing
+    /// the index where a matching key value pair could be inserted while maintaining
+    /// sorted order.
+    ///
+    /// # Examples
+    ///
+    /// Looks up a series of four elements.
+    /// The first is found, the second and third are not.
+    ///
+    /// ```
+    /// use vec_btree_map::VecBTreeMap;
+    ///
+    /// let mut map = VecBTreeMap::with_capacity(3);
+    /// map.insert("a", 1);
+    /// map.insert("c", 2);
+    /// map.insert("d", 3);
+    ///
+    /// assert_eq!(map.binary_search("a"), Ok(0));
+    /// assert_eq!(map.binary_search("b"), Err(1));
+    /// assert_eq!(map.binary_search("e"), Err(3));
+    /// ```
     #[inline]
     pub fn binary_search<Q: ?Sized>(&self, k: &Q) -> Result<usize, usize>
     where
@@ -59,6 +207,28 @@ where
         self.base.binary_search_by(|e| e.0.borrow().cmp(k))
     }
 
+    /// Inserts a key-value pair into the map.
+    ///
+    /// If the map did not have this key present, [`None`] is returned.
+    ///
+    /// If the map did have this key present, the value is updated, and the old
+    /// value is returned. The key is not updated.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use vec_btree_map::VecBTreeMap;
+    ///
+    /// let mut map = VecBTreeMap::new();
+    ///
+    /// assert_eq!(map.is_empty(), true);
+    /// assert_eq!(map.insert("a", 1), None);
+    /// assert_eq!(map.is_empty(), false);
+    ///
+    /// map.insert("a", 2);
+    /// assert_eq!(map.insert("a", 3), Some(2));
+    /// assert_eq!(map[0], 3);
+    /// ```
     #[inline]
     pub fn insert(&mut self, k: K, v: V) -> Option<V> {
         match self.binary_search(&k) {
@@ -70,6 +240,23 @@ where
         }
     }
 
+    /// Removes a key from the map, returning the value at the key if the key
+    /// was previously in the map.
+    ///
+    /// The key may be any borrowed form of the map's key type, but
+    /// [`Ord`] on the borrowed form *must* match those for
+    /// the key type.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use vec_btree_map::VecBTreeMap;
+    ///
+    /// let mut map = VecBTreeMap::new();
+    /// map.insert("a", 1);
+    /// assert_eq!(map.remove("a"), Some(1));
+    /// assert_eq!(map.remove("a"), None);
+    /// ```
     #[inline]
     pub fn remove<Q: ?Sized>(&mut self, k: &Q) -> Option<V>
     where
