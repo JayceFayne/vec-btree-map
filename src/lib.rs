@@ -9,10 +9,11 @@ mod tests;
 
 use alloc::vec::Vec;
 use core::borrow::Borrow;
+use core::fmt::{self, Debug, Formatter};
 
-pub use iter::{Keys, Values, ValuesMut};
+pub use iter::{Iter, Keys, Values, ValuesMut};
 
-#[derive(Debug, Clone, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct VecBTreeMap<K, V> {
     base: Vec<(K, V)>,
 }
@@ -89,8 +90,32 @@ impl<K, V> VecBTreeMap<K, V> {
         }
     }
 
+    /// An iterator yielding all key-value paris from start to end.
+    /// The iterator element type is `(&K, &V)`.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use vec_btree_map::VecBTreeMap;
+    ///
+    /// let mut map = VecBTreeMap::with_capacity(3);
+    /// map.insert("a", 1);
+    /// map.insert("b", 2);
+    /// map.insert("c", 3);
+    ///
+    /// let mut iter = map.iter();
+    ///
+    /// for (key, value) in iter {
+    ///     println!("{key}: {value}");
+    /// }
+    /// ```
+    #[inline]
+    pub fn iter(&self) -> Iter<'_, K, V> {
+        Iter::new(self.base.iter())
+    }
+
     /// An iterator yielding all keys from start to end.
-    /// The iterator element type is `&'a K`.
+    /// The iterator element type is `&K`.
     ///
     /// # Examples
     ///
@@ -115,7 +140,7 @@ impl<K, V> VecBTreeMap<K, V> {
     }
 
     /// An iterator yielding all values from start to end.
-    /// The iterator element type is `&'a V`.
+    /// The iterator element type is `&V`.
     ///
     /// # Examples
     ///
@@ -140,7 +165,7 @@ impl<K, V> VecBTreeMap<K, V> {
     }
 
     /// An iterator yielding all values mutably from start to end.
-    /// The iterator element type is `&'a V`.
+    /// The iterator element type is `&V`.
     ///
     /// # Examples
     ///
@@ -264,5 +289,21 @@ where
         Q: Ord,
     {
         self.binary_search(k).map(|i| self.base.remove(i).1).ok()
+    }
+}
+
+impl<K: Clone, V: Clone> Clone for VecBTreeMap<K, V> {
+    #[inline]
+    fn clone(&self) -> Self {
+        Self {
+            base: self.base.clone(),
+        }
+    }
+}
+
+impl<K: Debug, V: Debug> Debug for VecBTreeMap<K, V> {
+    #[inline]
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.debug_map().entries(self.iter()).finish()
     }
 }
