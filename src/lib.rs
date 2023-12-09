@@ -10,6 +10,7 @@ mod tests;
 use alloc::vec::Vec;
 use core::borrow::Borrow;
 use core::fmt::{self, Debug, Formatter};
+use core::mem;
 
 pub use iter::{Iter, Keys, Values, ValuesMut};
 
@@ -232,12 +233,37 @@ where
         self.base.binary_search_by(|e| e.0.borrow().cmp(k))
     }
 
+    /// Appends a key-value pair to the back of the map.
+    ///
+    /// If the map woudn't be sorted anymore by inserting
+    /// the key-value pair to the back of the map, [`Some`]`(K, V)` is returned.
+    /// Otherwise [`None`] is returned.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the new capacity exceeds `isize::MAX` bytes.
+    #[inline]
+    pub fn push(&mut self, k: K, v: V) -> Option<(K, V)> {
+        let last = self.len().saturating_sub(1);
+        if let Some((key, _)) = self.get(last) {
+            if key >= &k {
+                return Some((k, v));
+            }
+        }
+        self.base.push((k, v));
+        None
+    }
+
     /// Inserts a key-value pair into the map.
     ///
     /// If the map did not have this key present, [`None`] is returned.
     ///
     /// If the map did have this key present, the value is updated, and the old
     /// value is returned. The key is not updated.
+    ///
+    /// # Panics
+    ///
+    /// Panics if the new capacity exceeds `isize::MAX` bytes.
     ///
     /// # Examples
     ///
@@ -257,7 +283,7 @@ where
     #[inline]
     pub fn insert(&mut self, k: K, v: V) -> Option<V> {
         match self.binary_search(&k) {
-            Ok(i) => Some(core::mem::replace(&mut self.base[i].1, v)),
+            Ok(i) => Some(mem::replace(&mut self.base[i].1, v)),
             Err(i) => {
                 self.base.insert(i, (k, v));
                 None
