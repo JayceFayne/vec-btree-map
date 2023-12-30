@@ -4,6 +4,8 @@ extern crate alloc;
 mod deref;
 mod index;
 mod iter;
+#[cfg(feature = "serde")]
+mod serde;
 #[cfg(test)]
 mod tests;
 
@@ -204,7 +206,7 @@ where
     /// If the key is found then [`Result::Ok`] is returned, containing the
     /// index of the matching key.
     /// If the key is not found then [`Result::Err`] is returned, containing
-    /// the index where a matching key value pair could be inserted while maintaining
+    /// the index where a matching key-value pair could be inserted while maintaining
     /// sorted order.
     ///
     /// # Examples
@@ -235,7 +237,7 @@ where
 
     /// Appends a key-value pair to the back of the map.
     ///
-    /// If the map woudn't be sorted anymore by inserting
+    /// If the map woudn't be sorted anymore by appending
     /// the key-value pair to the back of the map, [`Some`]`(K, V)` is returned.
     /// Otherwise [`None`] is returned.
     ///
