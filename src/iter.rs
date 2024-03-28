@@ -187,6 +187,7 @@ impl<'a, K, V> ValuesMut<'a, K, V> {
 }
 
 impl<'a, K: Debug, V: Debug> Debug for ValuesMut<'a, K, V> {
+    #[inline]
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         f.debug_list()
             .entries(Values::new(self.base.as_slice().iter()))
