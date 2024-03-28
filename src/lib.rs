@@ -318,6 +318,42 @@ where
     {
         self.binary_search(k).map(|i| self.base.remove(i).1).ok()
     }
+
+    /// Removes the last key-value pair from the map and returns it, or [`None`] if it
+    /// is empty.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use vec_btree_map::VecBTreeMap;
+    ///
+    /// let mut map = VecBTreeMap::new();
+    /// map.insert("a", 1);
+    /// assert_eq!(map.pop(), Some(("a", 1)));
+    /// assert_eq!(map.pop(), None);
+    /// ```
+    #[inline]
+    pub fn pop(&mut self) -> Option<(K, V)> {
+        self.base.pop()
+    }
+
+    /// Clears the map, removing all key-value pairs. Keeps the allocated memory
+    /// for reuse.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use vec_btree_map::VecBTreeMap;
+    ///
+    /// let mut a = VecBTreeMap::new();
+    /// a.insert(1, "a");
+    /// a.clear();
+    /// assert!(a.is_empty());
+    /// ```
+    #[inline]
+    pub fn clear(&mut self) {
+        self.base.clear()
+    }
 }
 
 impl<K: Clone, V: Clone> Clone for VecBTreeMap<K, V> {
