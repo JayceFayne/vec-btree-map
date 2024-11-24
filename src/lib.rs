@@ -14,7 +14,7 @@ use core::borrow::Borrow;
 use core::fmt::{self, Debug, Formatter};
 use core::mem;
 
-pub use iter::{Iter, Keys, Values, ValuesMut};
+pub use iter::{Iter, IterMut, Keys, Values, ValuesMut};
 
 #[derive(Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct VecBTreeMap<K, V> {
@@ -117,6 +117,33 @@ impl<K, V> VecBTreeMap<K, V> {
         Iter::new(self.base.iter())
     }
 
+    /// An iterator yielding all key-value pairs from start to end, with mutable references to the values.
+    /// The iterator element type is (&K, &mut V).
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use vec_btree_map::VecBTreeMap;
+    ///
+    /// let mut map = VecBTreeMap::with_capacity(3);
+    /// map.insert("a", 1);
+    /// map.insert("b", 2);
+    /// map.insert("c", 3);
+    ///
+    /// // Update all values
+    /// for (_, value) in map.iter_mut() {
+    ///     *value *= 2;
+    /// }
+    ///
+    /// for (key, value) in map.iter() {
+    ///     println!("{key}: {value}");
+    /// }
+    /// ```
+    #[inline]
+    pub fn iter_mut(&mut self) -> IterMut<'_, K, V> {
+        IterMut::new(self.base.iter_mut())
+    }
+
     /// An iterator yielding all keys from start to end.
     /// The iterator element type is `&K`.
     ///
@@ -130,7 +157,7 @@ impl<K, V> VecBTreeMap<K, V> {
     /// map.insert("b", 2);
     /// map.insert("c", 3);
     ///
-    ///let mut keys = map.keys();
+    /// let mut keys = map.keys();
     ///
     /// assert_eq!(keys.next(), Some(&"a"));
     /// assert_eq!(keys.next(), Some(&"b"));
