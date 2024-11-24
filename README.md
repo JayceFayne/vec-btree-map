@@ -11,7 +11,7 @@ Basically just a sorted [Vec](https://doc.rust-lang.org/std/vec/struct.Vec.html)
 
 ## Why?
 
-This library is meant for building data structures that you iterate over a lot but don't change much.
+This library is meant for building data structures that you iterate over a lot.
 Why not just use a HashMap? Iterating over a HashMap is slow and the iteration order is not guaranteed to be stable.
 
 ## Contributing
