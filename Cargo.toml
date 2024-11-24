@@ -1,6 +1,6 @@
 [package]
 name = "vec-btree-map"
-version = "0.6.0"
+version = "0.7.0"
 edition = "2021"
 description = "Basically just a sorted Vec that can be used as a HashMap"
 license = "MIT"
