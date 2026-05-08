@@ -254,10 +254,10 @@ where
     /// assert_eq!(map.binary_search("e"), Err(3));
     /// ```
     #[inline]
-    pub fn binary_search<Q: ?Sized>(&self, k: &Q) -> Result<usize, usize>
+    pub fn binary_search<Q>(&self, k: &Q) -> Result<usize, usize>
     where
+        Q: Ord + ?Sized,
         K: Borrow<Q>,
-        Q: Ord,
     {
         self.base.binary_search_by(|e| e.0.borrow().cmp(k))
     }
@@ -338,10 +338,10 @@ where
     /// assert_eq!(map.remove("a"), None);
     /// ```
     #[inline]
-    pub fn remove<Q: ?Sized>(&mut self, k: &Q) -> Option<V>
+    pub fn remove<Q>(&mut self, k: &Q) -> Option<V>
     where
+        Q: Ord + ?Sized,
         K: Borrow<Q>,
-        Q: Ord,
     {
         self.binary_search(k).map(|i| self.base.remove(i).1).ok()
     }
