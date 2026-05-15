@@ -274,10 +274,10 @@ where
     #[inline]
     pub fn push(&mut self, k: K, v: V) -> Option<(K, V)> {
         let last = self.len().saturating_sub(1);
-        if let Some((key, _)) = self.get(last) {
-            if key >= &k {
-                return Some((k, v));
-            }
+        if let Some((key, _)) = self.get(last)
+            && key >= &k
+        {
+            return Some((k, v));
         }
         self.base.push((k, v));
         None
