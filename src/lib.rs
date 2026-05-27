@@ -16,9 +16,15 @@ use core::mem;
 
 pub use iter::{Iter, IterMut, Keys, Values, ValuesMut};
 
-#[derive(Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct VecBTreeMap<K, V> {
     base: Vec<(K, V)>,
+}
+
+impl<K, V> Default for VecBTreeMap<K, V> {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
 impl<K, V> VecBTreeMap<K, V> {
